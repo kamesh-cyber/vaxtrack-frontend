@@ -1,0 +1,22 @@
+.count {
+    font-size: 3rem !important;
+    font-weight: 700 !important;
+    color: #333;
+}
+.icon {
+    width: 100%; 
+    padding: 5px;
+    border-radius: 10px;
+}
+.student {
+    color: #f47d43;
+    background-color: #f47e433e;
+}
+.vaccinated {
+    color: #436cf4;
+    background-color: #436cf43e;
+}
+.percentage {
+    color: #137d2c;
+    background-color: #137d2c3e;
+}
