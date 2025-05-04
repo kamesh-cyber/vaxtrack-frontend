@@ -2,20 +2,18 @@ import React from 'react';
 import "./Vaccines.css";
 import { vaccinesData } from '../utils/dummyDatas';
 import {IconButton, Grid, Paper, Typography, Button} from '@mui/material';
-import {EditDocument as EditIcon, AddBox as AddIcon, DriveFolderUpload as UploadIcon} from '@mui/icons-material';
+import {EditDocument as EditIcon, AddBox as AddIcon, DriveFolderUpload as UploadIcon, Add} from '@mui/icons-material';
 import TableComp from '../components/TableComp';
 import { _get } from '../api/client';
 import { formatDate } from '../utils/common';
+import AddVaccineModal from '../components/AddVaccineModal';
 
 const Vaccines = ({}) => {
     const [vaccines, setVaccines] = React.useState([]);
+    const [showAddModal, setShowAddModal] = React.useState(false);
 
-    React.useEffect(() => {
-        if (vaccines && vaccines.length > 0) {
-            return;
-        }
-        // Fetch data from API
-        _get("/vaccinations", {})
+    const getVaccines = async () => {
+        await _get("/vaccinations", {})
             .then((res) => {
                 if (res.status !== 200) {
                     throw new Error("Failed to fetch data");
@@ -28,9 +26,13 @@ const Vaccines = ({}) => {
             .catch((err) => {
                 console.log(err);
             });
+    }
+    React.useEffect(() => {
+        getVaccines();
     }, []);
 
     return (
+        <>
         <Paper sx={{ padding: 2 }}>
             <Typography sx={{ fontWeight: "bold" }}>
                 Vaccination Drive List
@@ -39,18 +41,22 @@ const Vaccines = ({}) => {
                 <Typography sx={{ fontWeight: "bold", color: "gray" }}>
                     Total Vaccination Drives: {vaccines.length}
                 </Typography>
-                <Button
+                {/* <Button
                     variant="contained"
                     size="small"
                     color="warning"
                     startIcon={<UploadIcon />}
                     sx={{ marginLeft: "auto" }}
-                >Bulk Upload</Button>
+                >Bulk Upload</Button> */}
                 <Button 
                     variant="contained"
                     size="small"
                     color="success"
                     startIcon={<AddIcon />}
+                    sx={{ marginLeft: "auto" }}
+                    onClick={() => {
+                        setShowAddModal(true);
+                    }}
                 >Add Vaccination Drive</Button>
             </Grid>
             <Grid container spacing={2} sx={{ marginBottom: 2 }}>
@@ -78,6 +84,14 @@ const Vaccines = ({}) => {
                 />
             </Grid>
         </Paper>
+        {showAddModal && <AddVaccineModal
+            open={showAddModal}
+            handleClose={() => {
+                setShowAddModal(false);
+            }}
+            refreshVaccines={getVaccines}
+        />}
+        </>
     );
 }
 export default Vaccines;

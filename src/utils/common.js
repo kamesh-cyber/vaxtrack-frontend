@@ -5,6 +5,12 @@ const formatDate = (date) => {
     return moment(date).format("DD/MM/YYYY");
 }
 
+const showLoading = (isShow) => {
+  const event = new CustomEvent('loadingStatus', { detail: { isLoading: isShow } });
+  window.dispatchEvent(event);
+}
+
 export {
-    formatDate
+    formatDate,
+    showLoading
 }

@@ -17,35 +17,46 @@ const style = {
     boxShadow: 24,
     borderRadius: 2,
 };
+const classes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
+const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
     const [showModal, setShowModal] = React.useState(open);
-    const [studentData, setStudentData] = React.useState({
+    const [vaccineData, setVaccineData] = React.useState({
         name: "",
-        class: 0,
-        age: 0,
-        gender: "",
-        dob: null,
+        scheduled_date: null,
+        available_doses: 0,
+        classes: [],
     });
-    const [newStudent, setNewStudent] = React.useState(null);
+    const [newVaccine, setNewVaccine] = React.useState(null);
     const handleChange = (key, value) => {
-        setStudentData({
-            ...studentData,
+        if (key === "classes") {
+            let selectedClasses = []
+            if (vaccineData.classes.includes(value))
+                selectedClasses = vaccineData.classes.filter((classItem) => classItem !== value);
+            else
+                selectedClasses = [...vaccineData.classes, value];
+            setVaccineData({
+                ...vaccineData,
+                [key]: selectedClasses,
+            });
+            return;
+        }
+        setVaccineData({
+            ...vaccineData,
             [key]: value,
         });
     }
     const handleSubmit = () => {
-        console.log("handleSubmit", studentData);
-        createStudent();
+        console.log("handleSubmit", vaccineData);
+        createVaccine();
     }
-    const createStudent = async () => {
-        console.log("createStudent", studentData);
-        await _post("/students", {
-            "name": studentData?.name || "",
-            "age": studentData?.age || "",
-            "class": studentData?.class || "",
-            "gender": studentData?.gender || "",
-            "dateOfBirth": studentData?.dob ? dayjs(studentData.dob).format('DD-MM-YYYY') : ""
+    const createVaccine = async () => {
+        console.log("createVaccine", vaccineData);
+        await _post("/vaccinations", {
+            "name": vaccineData?.name || "",
+            "scheduled_date": vaccineData?.scheduled_date ? dayjs(vaccineData.scheduled_date).format() : "",
+            "available_doses": vaccineData?.available_doses || 0,
+            "classes": vaccineData?.classes || [],
         }, {})
         .then((res) => {
             console.log(res);
@@ -53,9 +64,9 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                 throw new Error("Failed to fetch data");
             }
             const resp = res.data;
-            if (resp.studentId) {
-                setNewStudent(resp);
-                refreshStudents();
+            if (resp.success === true && resp.data) {
+                setNewVaccine(resp.data);
+                refreshVaccines();
             }
         })
         .catch((err) => {
@@ -69,13 +80,13 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                 setShowModal(false);
                 handleClose();
             }}
-            className='add-student-modal'
+            className='add-vaccine-modal'
         >
-            <Paper className='add-student-modal-box' sx={style}>
+            <Paper className='add-vaccine-modal-box' sx={style}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2, borderRadius: "8px 8px 0px 0px",
                     color: 'white', backgroundColor: '#254a73', alignItems: 'center' }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 16 }}>
-                        Add Student
+                        Add Vaccine
                     </Typography>
                     <Typography variant="body2" onClick={() => {
                         handleClose();
@@ -86,49 +97,46 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
 
                 </Box>
                 <form style={{ padding: 20 }}>
-                    {!newStudent ? <Grid container spacing={2} direction={"column"}>
+                    {!newVaccine ? <Grid container spacing={2} direction={"column"}>
                         <TextField label="Name" fullWidth size='small' 
-                            value={studentData.name} 
+                            value={vaccineData.name} 
                             onChange={(e) => handleChange("name", e.target.value)}/>
                         <Grid container spacing={2}>
-                            <Grid size="grow">
-                                <TextField fullWidth label="Class" size='small' type='number'
-                                    value={studentData.class} 
-                                    onChange={(e) => handleChange("class", e.target.value)}/>
-                            </Grid>
                             <Grid>
                                 <TextField
                                     select
                                     size="small"
                                     slotProps={{
                                         select: {
+                                            multiple: true,
+                                            renderValue: (selected) => {
+                                                return selected.join(", ");
+                                            },
                                             native: true,
                                         },
                                     }}
-                                    value={studentData.gender}
-                                    onChange={(e) => handleChange("gender", e.target.value)}
+                                    value={vaccineData.classes}
+                                    onChange={(e) => handleChange("classes", e.target.value)}
                                 >
-                                    <option value="" disabled>--Select Gender--</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
+                                    <option value="" disabled>--Select Classes--</option>
+                                    { classes.map((classItem) => (<option value={classItem}>{classItem}</option>)) }
                                 </TextField>
                             </Grid>
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid>
-                                <TextField label="Age" fullWidth size='small' type='number'
-                                    value={studentData.age}
-                                    onChange={(e) => handleChange("age", e.target.value)}/>
+                                <TextField label="Available Doses" fullWidth size='small' type='number'
+                                    value={vaccineData.available_doses}
+                                    onChange={(e) => handleChange("available_doses", e.target.value)}/>
                             </Grid>
                             <Grid>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker label="Date of Birth" slotProps={{ textField: { size: 'small' } }}
+                                    <DatePicker label="Scheduled Date" slotProps={{ textField: { size: 'small' } }}
                                         format='DD-MM-YYYY'
                                         onChange={(newValue) => {
-                                            handleChange("dob", newValue);
+                                            handleChange("scheduled_date", newValue);
                                         }}
-                                        value={studentData.dob}
+                                        value={vaccineData.scheduled_date}
                                     />
                                 </LocalizationProvider>
                             </Grid>
@@ -138,32 +146,32 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                     <Grid container spacing={2} direction={"column"}>
                         <Grid item xs={12}>
                             <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-                                Student Created Successfully
+                                Vaccination Created Successfully
                             </Typography>
                         </Grid>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                                Student ID: {newStudent?.studentId}
+                                Student ID: {newVaccine?.studentId}
                             </Typography>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12}>
                             <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                                Message: {newStudent?.message}
+                                Data: {JSON.stringify(newVaccine)}
                             </Typography>
                         </Grid>
                     </Grid>
                     }
                 </form>
                 <Grid container spacing={2} sx={{padding: "5px 20px 20px 20px"}}>
-                    <Grid size={newStudent ? 12 : 6}>
+                    <Grid size={newVaccine ? 12 : 6}>
                         <Button variant='outlined' color='warning' fullWidth
                             onClick={() => {
                                 handleClose();
                                 setShowModal(false);
                             }}
-                        >{newStudent ? 'Close' : 'Cancel'}</Button>
+                        >{newVaccine ? 'Close' : 'Cancel'}</Button>
                     </Grid>
-                    {!newStudent && <Grid size={6}>
+                    {!newVaccine && <Grid size={6}>
                         <Button variant='contained' color='success' fullWidth onClick={handleSubmit}>Submit</Button>
                     </Grid>}
                 </Grid>
@@ -171,4 +179,4 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
         </Modal>
     );
 }
-export default AddStudentModal;
+export default AddVaccineModal;

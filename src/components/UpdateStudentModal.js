@@ -4,8 +4,7 @@ import { Close } from '@mui/icons-material';
 import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import './Modal.css';
-import dayjs from 'dayjs';
-import { _post } from '../api/client';
+import { _get, _patch } from '../api/client';
 
 
 const style = {
@@ -18,16 +17,45 @@ const style = {
     borderRadius: 2,
 };
 
-const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
-    const [showModal, setShowModal] = React.useState(open);
+const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
+    const [showModal, setShowModal] = React.useState(false);
     const [studentData, setStudentData] = React.useState({
         name: "",
-        class: 0,
         age: 0,
+        class: 0,
         gender: "",
         dob: null,
+        vaccinations: []
     });
-    const [newStudent, setNewStudent] = React.useState(null);
+    const [updatedStudent, setUpdatedStudent] = React.useState(null);
+    useEffect(() => {
+        if (updateData) {
+            getStudentData(updateData.studentId);
+        }
+    }, [updateData])
+    const getStudentData = async (id) => {
+        await _get(`/students/${id}`, {})
+        .then((res) => {
+            if (res.status !== 200) {
+                throw new Error("Failed to fetch data");
+            }
+            const resp = res.data;
+            if (resp.success === true && resp.data) {
+                setStudentData({
+                    name: resp.data.name,
+                    age: resp.data.age,
+                    class: resp.data.class,
+                    gender: resp.data.gender,
+                    dob: resp.data.dateOfBirth,
+                    vaccinations: resp.data.vaccinations,
+                });
+                setShowModal(true);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
     const handleChange = (key, value) => {
         setStudentData({
             ...studentData,
@@ -36,25 +64,21 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
     }
     const handleSubmit = () => {
         console.log("handleSubmit", studentData);
-        createStudent();
+        updateStudent();
     }
-    const createStudent = async () => {
-        console.log("createStudent", studentData);
-        await _post("/students", {
-            "name": studentData?.name || "",
-            "age": studentData?.age || "",
-            "class": studentData?.class || "",
-            "gender": studentData?.gender || "",
-            "dateOfBirth": studentData?.dob ? dayjs(studentData.dob).format('DD-MM-YYYY') : ""
-        }, {})
+    const updateStudent = async () => {
+        console.log("updateStudent", studentData);
+        await _patch("/students/{id}/vaccinate", {
+            "vaccines": studentData.vaccinations
+          }, {})
         .then((res) => {
             console.log(res);
             if (res.status !== 201) {
                 throw new Error("Failed to fetch data");
             }
             const resp = res.data;
-            if (resp.studentId) {
-                setNewStudent(resp);
+            if (resp.success === true && resp.data) {
+                setUpdatedStudent(resp.data);
                 refreshStudents();
             }
         })
@@ -75,7 +99,7 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2, borderRadius: "8px 8px 0px 0px",
                     color: 'white', backgroundColor: '#254a73', alignItems: 'center' }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 16 }}>
-                        Add Student
+                        Edit Student Vaccination
                     </Typography>
                     <Typography variant="body2" onClick={() => {
                         handleClose();
@@ -86,13 +110,15 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
 
                 </Box>
                 <form style={{ padding: 20 }}>
-                    {!newStudent ? <Grid container spacing={2} direction={"column"}>
+                    {!updatedStudent ? <Grid container spacing={2} direction={"column"}>
                         <TextField label="Name" fullWidth size='small' 
+                            disabled
                             value={studentData.name} 
                             onChange={(e) => handleChange("name", e.target.value)}/>
                         <Grid container spacing={2}>
                             <Grid size="grow">
                                 <TextField fullWidth label="Class" size='small' type='number'
+                                    disabled
                                     value={studentData.class} 
                                     onChange={(e) => handleChange("class", e.target.value)}/>
                             </Grid>
@@ -107,6 +133,7 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                                     }}
                                     value={studentData.gender}
                                     onChange={(e) => handleChange("gender", e.target.value)}
+                                    disabled
                                 >
                                     <option value="" disabled>--Select Gender--</option>
                                     <option value="male">Male</option>
@@ -118,11 +145,12 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                         <Grid container spacing={2}>
                             <Grid>
                                 <TextField label="Age" fullWidth size='small' type='number'
+                                    disabled
                                     value={studentData.age}
                                     onChange={(e) => handleChange("age", e.target.value)}/>
                             </Grid>
                             <Grid>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker label="Date of Birth" slotProps={{ textField: { size: 'small' } }}
                                         format='DD-MM-YYYY'
                                         onChange={(newValue) => {
@@ -130,7 +158,11 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                                         }}
                                         value={studentData.dob}
                                     />
-                                </LocalizationProvider>
+                                </LocalizationProvider> */}
+                                <TextField label="Date of Birth" fullWidth size='small'
+                                    disabled
+                                    value={studentData.dob}
+                                    onChange={(e) => handleChange("dob", e.target.value)}/>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -138,32 +170,27 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                     <Grid container spacing={2} direction={"column"}>
                         <Grid item xs={12}>
                             <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-                                Student Created Successfully
+                                Student Vaccines Updated Successfully
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                                Student ID: {newStudent?.studentId}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                                Message: {newStudent?.message}
+                                Vaccination: {updatedStudent?.vaccinations}
                             </Typography>
                         </Grid>
                     </Grid>
                     }
                 </form>
                 <Grid container spacing={2} sx={{padding: "5px 20px 20px 20px"}}>
-                    <Grid size={newStudent ? 12 : 6}>
+                    <Grid size={updatedStudent ? 12 : 6}>
                         <Button variant='outlined' color='warning' fullWidth
                             onClick={() => {
                                 handleClose();
                                 setShowModal(false);
                             }}
-                        >{newStudent ? 'Close' : 'Cancel'}</Button>
+                        >{updatedStudent ? 'Close' : 'Cancel'}</Button>
                     </Grid>
-                    {!newStudent && <Grid size={6}>
+                    {!updatedStudent && <Grid size={6}>
                         <Button variant='contained' color='success' fullWidth onClick={handleSubmit}>Submit</Button>
                     </Grid>}
                 </Grid>
@@ -171,4 +198,4 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
         </Modal>
     );
 }
-export default AddStudentModal;
+export default UpdateStudentModal;

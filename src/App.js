@@ -8,6 +8,7 @@ import DashLayout from './components/DashLayout.js';
 import Students from './home/Students.js';
 import Vaccines from './home/Vaccines.js';
 import Reports from './home/Reports.js';
+import PageLoader from './components/PageLoader.js';
 
 function App() {
   let navigate = useNavigate();
@@ -20,6 +21,8 @@ function App() {
   }, [navigate]);
 
   return (
+    <>
+    <PageLoader />
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route element={<DashLayout/>}>
@@ -30,6 +33,7 @@ function App() {
       </Route>
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
+    </>
   );
 }
 

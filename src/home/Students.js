@@ -1,23 +1,22 @@
 import React from "react";
 import "./Students.css";
 import TableComp from "../components/TableComp";
-import {studentsData} from "../utils/dummyDatas";
+// import {studentsData} from "../utils/dummyDatas";
 import {EditDocument as EditIcon, AddBox as AddIcon, DriveFolderUpload as UploadIcon} from '@mui/icons-material';
 import { Button, Grid, IconButton, Paper, Typography } from "@mui/material";
 import AddStudentModal from "../components/AddStudentModal";
 import UploadStudentModal from "../components/UploadStudentModal";
 import { _get } from "../api/client";
+import UpdateStudentModal from "../components/UpdateStudentModal";
 
 const Students = ({}) => {
     const [students, setStudents] = React.useState([]);
     const [showAddModal, setShowAddModal] = React.useState(false);
     const [showUploadModal, setShowUploadModal] = React.useState(false);
+    const [updateModal, setUpdateModal] = React.useState({show: false, studentId: null});
 
-    React.useEffect(() => {
-        if (students && students.length > 0) {
-            return;
-        }
-        _get("/students", {})
+    const getStudents = async () => {
+        await _get("/students", {})
             .then((res) => {
                 if (res.status !== 200) {
                     throw new Error("Failed to fetch data");
@@ -30,7 +29,9 @@ const Students = ({}) => {
             .catch((err) => {
                 console.log(err);
             });
-        setStudents(studentsData);
+    }
+    React.useEffect(() => {
+        getStudents();
     }, []);
 
     return (
@@ -64,7 +65,7 @@ const Students = ({}) => {
                 >Add Student</Button>
             </Grid>
             <Grid container spacing={2} sx={{ marginBottom: 2 }}>
-                <TableComp
+                {students.length && <TableComp
                     title="Students"
                     columns={[
                         { id: "_id", label: "ID", align: "center" },
@@ -82,10 +83,11 @@ const Students = ({}) => {
                             icon: <EditIcon fontSize="small"/>,
                             onClick: (row) => {
                                 console.log("Edit", row);
+                                setUpdateModal({show: true, studentId: row._id});
                             },
                         }
                     ]}
-                />
+                />}
             </Grid>
         </Paper>
 
@@ -94,19 +96,21 @@ const Students = ({}) => {
             handleClose={() => {
                 setShowAddModal(false);
             }}
-            handleAddStudent={(student) => {
-                setStudents([...students, student]);
-                setShowAddModal(false);
+            refreshStudents={getStudents}
+        />}
+        {updateModal.show && <UpdateStudentModal
+            updateData={updateModal}
+            handleClose={() => {
+                setUpdateModal({show: false, studentId: null});
             }}
+            refreshStudents={getStudents}
         />}
         {showUploadModal && <UploadStudentModal
             open={showUploadModal}
             handleClose={() => {
                 setShowUploadModal(false);
             }}
-            handleAddStudent={() => {
-                setShowUploadModal(false);
-            }}
+            refreshStudents={getStudents}
         />}
         </>     
     )

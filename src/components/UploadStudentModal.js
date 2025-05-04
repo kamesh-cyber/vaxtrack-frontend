@@ -16,7 +16,7 @@ const style = {
     borderRadius: 2,
 };
 
-const UploadStudentModal = ({ open, handleClose, handleUploadStudent }) => {
+const UploadStudentModal = ({ open, handleClose, refreshStudents }) => {
     const [showModal, setShowModal] = React.useState(open);
     const [uploadedFile, setUploadedFile] = React.useState(null);
 

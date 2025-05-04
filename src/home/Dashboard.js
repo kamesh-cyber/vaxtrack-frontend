@@ -7,11 +7,11 @@ import { _get } from '../api/client';
 
 const Dashboard = () => {
     const [dashboardData, setDashboardData] = React.useState({});
-    useEffect(() => {
+    const getDashoboardData = async () => {
         if (dashboardData && Object.keys(dashboardData).length > 0) {
             return;
         }
-        _get('/dashboard/overview', {})
+        await _get('/dashboard/overview', {})
             .then((res) => {
                 if (res.status !== 200) {
                     throw new Error('Failed to fetch data');
@@ -24,6 +24,12 @@ const Dashboard = () => {
             .catch((err) => {
                 console.log(err);
             });
+    }
+    useEffect(() => {
+        // const interval = setInterval(() => {
+            getDashoboardData();
+        // }, 60000);
+        // return () => clearInterval(interval);
     }, []);
   return (
     <div>
