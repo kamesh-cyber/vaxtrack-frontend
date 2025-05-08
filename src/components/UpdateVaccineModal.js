@@ -17,7 +17,6 @@ const style = {
     boxShadow: 24,
     borderRadius: 2,
 };
-const classes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const UpdateVaccineModal = ({ updateData, handleClose, refreshVaccines }) => {
     const [showModal, setShowModal] = React.useState(false);

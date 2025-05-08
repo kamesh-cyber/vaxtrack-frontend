@@ -160,7 +160,7 @@ const ReportsFilter = ({getFilteredData=() => {}}) => {
                             </FormControl>
                         </Grid>}
                         <Grid size={2}>
-                            {index+1 == filters.length ? filters.length != filterTypes.length-1 && <Button
+                            {index+1 === filters.length ? filters.length !== filterTypes.length-1 && <Button
                                 variant="outlined"
                                 size="small"
                                 color="success"
