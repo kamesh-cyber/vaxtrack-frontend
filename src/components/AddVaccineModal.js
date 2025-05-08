@@ -270,28 +270,6 @@ const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
                                     Vaccination Drive Created Successfully
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12}>
-                                <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Name:</Grid>
-                                        <Grid item xs={8}>{newVaccine.name}</Grid>
-                                        
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Scheduled Date:</Grid>
-                                        <Grid item xs={8}>{dayjs(newVaccine.scheduled_date).format('DD/MM/YYYY')}</Grid>
-                                        
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Available Doses:</Grid>
-                                        <Grid item xs={8}>{newVaccine.available_doses}</Grid>
-                                        
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Classes:</Grid>
-                                        <Grid item xs={8}>
-                                            {newVaccine.classes && newVaccine.classes.length > 0
-                                                ? newVaccine.classes.sort((a, b) => a - b).join(', ')
-                                                : 'All Classes'
-                                            }
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-                            </Grid>
                         </Grid>
                     )}
                 </form>

@@ -1,18 +1,18 @@
 import React from "react";
 import {IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow} from '@mui/material';
 
-const TableComp = ({ columns, rows, actions }) => {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  
-    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(+event.target.value);
-      setPage(0);
-    };
+const TableComp = ({ 
+    title, 
+    columns, 
+    rows, 
+    actions, 
+    pagination = false,
+    totalCount = 35,
+    page = 0,
+    rowsPerPage = 10,
+    onPageChange = () => {},
+    onRowsPerPageChange = () => {} 
+}) => {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden', }}>
         <TableContainer>
@@ -27,11 +27,10 @@ const TableComp = ({ columns, rows, actions }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
+                    {rows.map((row) => {
+                        // Remove the slice operation - rely on server pagination
                         return (
-                        <TableRow hover tabIndex={-1} key={row.id}>
+                        <TableRow hover tabIndex={-1} key={row._id || row.id}>
                             {columns.map((column) => {
                             const value = row[column.id];
                             return (
@@ -44,7 +43,7 @@ const TableComp = ({ columns, rows, actions }) => {
                                     ))}
                                 </TableCell>
                                 :
-                                <TableCell key={column.id+'-'+row.id} align={column.align}>
+                                <TableCell key={column.id+'-'+(row._id || row.id)} align={column.align}>
                                 {column.format && (typeof value === 'boolean'  || typeof value === 'object' || column?.type === 'date')
                                     ? column.format(value)
                                     : value || column?.default || "Not Available"}
@@ -56,16 +55,18 @@ const TableComp = ({ columns, rows, actions }) => {
                     })}
                 </TableBody>
             </Table>
+            {pagination && (
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    component="div"
+                    count={totalCount || rows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={onPageChange}
+                    onRowsPerPageChange={onRowsPerPageChange}
+                />
+            )}
         </TableContainer>
-        <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-        />
     </Paper>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import {Box, Button, Grid, Modal, Paper, TextField, Typography} from '@mui/material';
+import {Alert, Box, Button, Grid, Modal, Paper, TextField, Typography} from '@mui/material';
 import { Close,CheckCircle } from '@mui/icons-material';
 import './Modal.css';
 import { _get, _patch } from '../api/client';
@@ -29,6 +29,11 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
     const [vaccinations, setVaccinations] = React.useState([])
     const [updateReq, setUpdateReq] = React.useState({vaccination: ""});
     const [updatedStudent, setUpdatedStudent] = React.useState(null);
+    const [apiError, setApiError] = React.useState(null);
+    const [fieldErrors, setFieldErrors] = React.useState({
+        vaccination: '',
+    });
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
     useEffect(() => {
         if (updateData) {
             getModalDatas(updateData);
@@ -52,7 +57,12 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
         })
         .catch((err) => {
             console.log(err);
+            setApiError("Failed to load available vaccinations. Please try again.");
         })
+        .finally(() => {
+            setIsSubmitting(false);
+        }
+        );
     }
     const getStudentData = async (id) => {
         await _get(`/students/${id}`, {})
@@ -77,15 +87,40 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
         })
     }
     const handleChange = (key, value) => {
+        setFieldErrors({
+            ...fieldErrors,
+            [key]: ''
+        });
+        setApiError(null);
         setUpdateReq({
             [key]: value,
         });
     }
+    const validateForm = () => {
+        const errors = {
+            vaccination: !updateReq.vaccination ? 'Please select a vaccination' : '',
+        };
+        
+        setFieldErrors(errors);
+        
+        // Return true if no errors
+        return Object.values(errors).every(error => error === '');
+    }
     const handleSubmit = () => {
+        if (!validateForm()) return;
         updateStudent();
     }
     const updateStudent = async () => {
-        console.log("updateStudent", updateReq);
+        // console.log("updateStudent", updateReq);
+        if (!updateReq.vaccination) {
+            setFieldErrors({
+                vaccination: 'Please select a vaccination'
+            });
+            return;
+        }
+        
+        setIsSubmitting(true);
+        setApiError(null);
         const data = JSON.parse(updateReq.vaccination);
         await _patch(`/students/${updateData.studentId}/vaccinate`, {
             "vaccineName": data.name,
@@ -104,14 +139,38 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
         })
         .catch((err) => {
             console.log(err);
+            if (err.response && err.response.data) {
+                const errorData = err.response.data;
+                setUpdateReq({ vaccination: "" });
+                if (errorData.error && errorData.error.includes("Duplicate vaccination")) {
+                    setFieldErrors({
+                        vaccination: 'This vaccination has already been recorded for this student'
+                    });
+                    setApiError("Duplicate vaccination: This student has already received this vaccination.");
+                }
+                else if (errorData.error && errorData.error.includes("No Student with id")) {
+                    setApiError("Student not found. Please refresh and try again.");
+                }
+                else if (Array.isArray(errorData.errors) && errorData.errors.length > 0) {
+                    const formattedErrors = errorData.errors.join('\n');
+                    setApiError(formattedErrors);
+                }
+                else {
+                    setApiError(errorData.error || "Failed to update vaccination status. Please try again.");
+                }
+            } else {
+                setApiError("An error occurred while updating vaccination status. Please try again.");
+            }
         });
     }
     return (
         <Modal
             open={showModal}
             onClose={() => {
-                setShowModal(false);
-                handleClose();
+                if (!isSubmitting) {
+                    setShowModal(false);
+                    handleClose();
+                }
             }}
             className='update-student-modal'
         >
@@ -122,14 +181,25 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
                         Update Student Vaccination Details
                     </Typography>
                     <Typography variant="body2" onClick={() => {
-                        handleClose();
-                        setShowModal(false);
-                    }} style={{ cursor: 'pointer' }}>
+                        if (!isSubmitting) {
+                                handleClose();
+                                setShowModal(false);
+                            }
+                    }}  style={{ cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
                         <Close />
                     </Typography>
 
                 </Box>
                 <form style={{ padding: 20 }}>
+                {apiError && (
+                        <Alert
+                            severity="error" 
+                            sx={{ mb: 2, whiteSpace: 'pre-line' }}
+                            onClose={() => setApiError(null)}
+                        >
+                            {apiError}
+                        </Alert>
+                    )}
                     {!updatedStudent ? <Grid container spacing={2} direction={"column"}>
                         <TextField label="Name" fullWidth size='small' 
                             disabled
@@ -206,6 +276,10 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
                                                 native: true,
                                             },
                                         }}
+                                        required
+                                            error={!!fieldErrors.vaccination}
+                                            helperText={fieldErrors.vaccination}
+                                            disabled={isSubmitting}
                                         value={updateReq.vaccination}
                                         onChange={(e) => handleChange("vaccination", e.target.value)}
                                     >
@@ -241,7 +315,7 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
                             }}
                         >{updatedStudent ? 'Close' : 'Cancel'}</Button>
                     </Grid>
-                    {!updatedStudent && <Grid size={6}>
+                    {!updatedStudent && <Grid item xs={6}>
                         <Button variant='contained' color='success' fullWidth onClick={handleSubmit}>Update</Button>
                     </Grid>}
                 </Grid>

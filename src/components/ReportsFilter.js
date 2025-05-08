@@ -21,18 +21,6 @@ const ReportsFilter = ({getFilteredData=() => {}}) => {
         if (key === "filterType" || key === "filterValue") {
             updateFilterTypesAvailability(updatedFilters);
         }
-        // if (key === "filterType") {
-        //     const selectedFilterType = filterTypes.find(type => type.value === value);
-        //     if (selectedFilterType) {
-        //         const updatedFilterTypes = filterTypes.map(type => {
-        //             if (type.value === value) {
-        //                 return { ...type, disabled: true };
-        //             }
-        //             return { ...type, disabled: false };
-        //         });
-        //         setFilterTypes(updatedFilterTypes);
-        //     }
-        // }
     }
     const updateFilterTypesAvailability = (currentFilters) => {
         const selectedFilterTypes = currentFilters.map(filter => filter.filterType).filter(type => type);
@@ -195,6 +183,17 @@ const ReportsFilter = ({getFilteredData=() => {}}) => {
                         }}
                         disabled={!filters[0]?.filterType || filters[0]?.filterValue === ""}
                     >Generate Report</Button>
+                    <Grid item>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            color="warning"
+                            onClick={handleFilterReset}
+                            disabled={filters.length === 1 && !filters[0]?.filterType}
+                        >
+                            Reset Filters
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>            
         </Paper>

@@ -12,26 +12,54 @@ const Vaccines = ({}) => {
     const [vaccines, setVaccines] = React.useState([]);
     const [showAddModal, setShowAddModal] = React.useState(false);
     const [updateModal, setUpdateModal] = React.useState({show: false, vaccine: null});
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [totalVaccines, setTotalVaccines] = React.useState(0);
+    const [loading, setLoading] = React.useState(false);
+    
+    
+    const getVaccines = async (pageNum = page, rowsCount = rowsPerPage) => {
+        const offset = pageNum * rowsCount;
 
-    const getVaccines = async () => {
-        await _get("/vaccinations", {})
+        await _get("/vaccinations", {
+            params: {
+                    limit: rowsCount,
+                    offset: offset
+                }
+        })
             .then((res) => {
                 if (res.status !== 200) {
                     throw new Error("Failed to fetch data");
                 }
                 const resp = res.data;
                 if (resp.success === true && resp.data) {
+                    if (resp.totalCount !== undefined) {
+                        setTotalVaccines(resp.totalCount);
+                    }
                     setVaccines(resp.data);
                 }
             })
             .catch((err) => {
                 console.log(err);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }
     React.useEffect(() => {
         getVaccines();
     }, []);
-
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+        getVaccines(newPage, rowsPerPage);
+    };
+    
+    const handleChangeRowsPerPage = (event) => {
+        const newRowsPerPage = parseInt(event.target.value, 10);
+        setRowsPerPage(newRowsPerPage);
+        setPage(0); // Reset to first page when changing rows per page
+        getVaccines(0, newRowsPerPage);
+    };
     return (
         <>
         <Paper sx={{ padding: 2 }}>
@@ -40,7 +68,7 @@ const Vaccines = ({}) => {
             </Typography>
             <Grid container direction="row" spacing={1} sx={{ marginBottom: 2, alignItems: "baseline" }}>
                 <Typography className="vaccine-count"  sx={{ fontWeight: "bold", color: "gray" }}>
-                    Total Drives: {vaccines.length}
+                    Total Drives: {totalVaccines || vaccines.length}
                 </Typography>
                 {/* <Button
                     variant="contained"
@@ -83,6 +111,12 @@ const Vaccines = ({}) => {
                             },
                         }
                     ]}
+                    pagination={true}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    totalCount={totalVaccines}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Grid>
         </Paper>

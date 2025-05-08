@@ -17,7 +17,6 @@ export const _get = async (url, config) => {
     const resp = await apiClient.get(url, config);
     return resp;
   } catch (error) {
-    console.error('GET request failed:', error);
     showAlert({open: true, severity: "error", message: error})
     throw error;
   } finally {
@@ -31,7 +30,6 @@ export const _post = async (url, data, config) => {
     const resp = await apiClient.post(url, data, config);
     return resp;
   } catch (error) {
-    console.error('POST request failed:', error);
     showAlert({open: true, severity: "error", message: error})
     throw error;
   } finally {
@@ -45,7 +43,6 @@ export const _patch = async (url, data, config) => {
     const resp = await apiClient.patch(url, data, config);
     return resp;
   } catch (error) {
-    console.error('PATCH request failed:', error);
     showAlert({open: true, severity: "error", message: error})
     throw error;
   } finally {
@@ -59,7 +56,6 @@ export const _put = async (url, data, config) => {
     const resp = await apiClient.put(url, data, config);
     return resp;
   } catch (error) {
-    console.error('PUT request failed:', error);
     showAlert({open: true, severity: "error", message: error})
     throw error;
   } finally {
@@ -73,7 +69,6 @@ export const _delete = async (url, config) => {
     const resp = await apiClient.delete(url, config);
     return resp;
   } catch (error) {
-    console.error('DELETE request failed:', error);
     showAlert({open: true, severity: "error", message: error})
     throw error;
   } finally {

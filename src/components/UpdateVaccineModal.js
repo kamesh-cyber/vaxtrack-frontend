@@ -114,7 +114,6 @@ const UpdateVaccineModal = ({ updateData, handleClose, refreshVaccines }) => {
                 refreshVaccines();
             }
         } catch (err) {
-            console.error("Error updating vaccination drive:", err);
             return handleVaccinationErrors(err, fieldErrors, setFieldErrors, setApiError);
         } finally {
             setIsSubmitting(false);
@@ -243,28 +242,6 @@ const UpdateVaccineModal = ({ updateData, handleClose, refreshVaccines }) => {
                                     <CheckCircle sx={{ color: 'success.main' }} />
                                     Vaccination Drive Updated Successfully
                                 </Typography>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Name:</Grid>
-                                        <Grid item xs={8}>{newVaccine.name}</Grid>
-                                        
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Scheduled Date:</Grid>
-                                        <Grid item xs={8}>{dayjs(newVaccine.scheduled_date).format('DD/MM/YYYY')}</Grid>
-                                        
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Available Doses:</Grid>
-                                        <Grid item xs={8}>{newVaccine.available_doses}</Grid>
-                                        
-                                        <Grid item xs={4} sx={{ fontWeight: 'bold' }}>Classes:</Grid>
-                                        <Grid item xs={8}>
-                                            {newVaccine.classes && newVaccine.classes.length > 0
-                                                ? newVaccine.classes.sort((a, b) => a - b).join(', ')
-                                                : 'All Classes'
-                                            }
-                                        </Grid>
-                                    </Grid>
-                                </Box>
                             </Grid>
                         </Grid>
                     )}

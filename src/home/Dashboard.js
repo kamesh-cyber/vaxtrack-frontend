@@ -75,16 +75,18 @@ const Dashboard = () => {
                 </Paper>
             </Grid>
         </Grid>
-        <Grid>
+        <Grid container justifyContent="left">
+        <Grid item xs={12} md={6} lg={4}>
             <Paper elevation={3} style={{ width: '100%', textAlign: 'start', borderRadius: 10, marginTop: 20 }}>
                 <div style={{ padding: 20 }}>
                     <Typography sx={{opacity: 0.6}}>Upcoming Vaccination Drives</Typography>
-                    {dashboardData?.upcomingDrives?.length && <UpcomingVaccinations
+                    <UpcomingVaccinations
                         upcomingDrives={dashboardData?.upcomingDrives || []}
                         onVaccineClick={handleVaccineClick}
-                    />}
+                    />
                 </div>
             </Paper>
+        </Grid>
         </Grid>
       </Grid>
              {/* Modal for displaying vaccination details */}
