@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
-import {Box, Button, Grid, Modal, Paper, TextField, Typography} from '@mui/material';
-import { Close } from '@mui/icons-material';
-import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
+import React from 'react';
+import { Box, Button, Grid, Modal, Paper, TextField, Typography, MenuItem, FormControl, InputLabel, Select, ListItemText, Checkbox } from '@mui/material';
+import { Close, CheckCircle } from '@mui/icons-material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import './Modal.css';
 import dayjs from 'dayjs';
 import { _post } from '../api/client';
+
 
 
 const style = {
@@ -20,24 +21,21 @@ const style = {
 const classes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
+    const [classesDropdownOpen, setClassesDropdownOpen] = React.useState(false);
     const [showModal, setShowModal] = React.useState(open);
     const [vaccineData, setVaccineData] = React.useState({
         name: "",
         scheduled_date: null,
-        available_doses: 0,
+        available_doses: null,
         classes: [],
     });
     const [newVaccine, setNewVaccine] = React.useState(null);
     const handleChange = (key, value) => {
         if (key === "classes") {
-            let selectedClasses = []
-            if (vaccineData.classes.includes(value))
-                selectedClasses = vaccineData.classes.filter((classItem) => classItem !== value);
-            else
-                selectedClasses = [...vaccineData.classes, value];
             setVaccineData({
                 ...vaccineData,
-                [key]: selectedClasses,
+                // [key]: selectedClasses,
+                classes: [...new Set(value)],
             });
             return;
         }
@@ -58,20 +56,20 @@ const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
             "available_doses": vaccineData?.available_doses || 0,
             "classes": vaccineData?.classes || [],
         }, {})
-        .then((res) => {
-            console.log(res);
-            if (res.status !== 201) {
-                throw new Error("Failed to fetch data");
-            }
-            const resp = res.data;
-            if (resp.success === true && resp.data) {
-                setNewVaccine(resp.data);
-                refreshVaccines();
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res) => {
+                console.log(res);
+                if (res.status !== 201) {
+                    throw new Error("Failed to fetch data");
+                }
+                const resp = res.data;
+                if (resp.success === true && resp.data) {
+                    setNewVaccine(resp.data);
+                    refreshVaccines();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
     return (
         <Modal
@@ -83,8 +81,10 @@ const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
             className='add-vaccine-modal'
         >
             <Paper className='add-vaccine-modal-box' sx={style}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2, borderRadius: "8px 8px 0px 0px",
-                    color: 'white', backgroundColor: '#254a73', alignItems: 'center' }}>
+                <Box sx={{
+                    display: 'flex', justifyContent: 'space-between', padding: 2, borderRadius: "8px 8px 0px 0px",
+                    color: 'white', backgroundColor: '#254a73', alignItems: 'center'
+                }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 16 }}>
                         Add Vaccine
                     </Typography>
@@ -98,36 +98,53 @@ const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
                 </Box>
                 <form style={{ padding: 20 }}>
                     {!newVaccine ? <Grid container spacing={2} direction={"column"}>
-                        <TextField label="Name" fullWidth size='small' 
-                            value={vaccineData.name} 
-                            onChange={(e) => handleChange("name", e.target.value)}/>
+                        <TextField label="Name" fullWidth size='small'
+                            value={vaccineData.name}
+                            onChange={(e) => handleChange("name", e.target.value)} />
                         <Grid container spacing={2}>
-                            <Grid>
-                                <TextField
-                                    select
-                                    size="small"
-                                    slotProps={{
-                                        select: {
-                                            multiple: true,
-                                            renderValue: (selected) => {
-                                                return selected.join(", ");
-                                            },
-                                            native: true,
-                                        },
-                                    }}
-                                    value={vaccineData.classes}
-                                    onChange={(e) => handleChange("classes", e.target.value)}
-                                >
-                                    <option value="" disabled>--Select Classes--</option>
-                                    { classes.map((classItem) => (<option value={classItem}>{classItem}</option>)) }
-                                </TextField>
+                            <Grid item xs={12} sx={{ width: '100%' }}>
+
+
+                                <FormControl fullWidth size="small">
+                                    <InputLabel id="classes-select-label">Select Classes</InputLabel>
+                                    <Select
+                                        labelId="classes-select-label"
+                                        id="classes-select"
+                                        multiple
+                                        open={classesDropdownOpen}
+                                        onOpen={() => setClassesDropdownOpen(true)}
+                                        onClose={() => setClassesDropdownOpen(false)}
+                                        value={vaccineData.classes}
+                                        onChange={(e) => handleChange('classes', e.target.value)}
+                                        renderValue={(selected) => selected.sort((a, b) => a - b).join(', ')}
+                                    >
+                                        {classes.map((classItem) => (
+                                            <MenuItem key={classItem} value={classItem}>
+                                                <Checkbox checked={vaccineData.classes.includes(classItem)} />
+                                                <ListItemText primary={`Class ${classItem}`} />
+                                            </MenuItem>
+                                        ))}
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setClassesDropdownOpen(false); // This is the key line that closes the dropdown
+                                                }}
+                                            >
+                                                OK
+                                            </Button>
+                                        </Box>
+                                    </Select>
+                                </FormControl>
                             </Grid>
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid>
                                 <TextField label="Available Doses" fullWidth size='small' type='number'
                                     value={vaccineData.available_doses}
-                                    onChange={(e) => handleChange("available_doses", e.target.value)}/>
+                                    onChange={(e) => handleChange("available_doses", e.target.value)} />
                             </Grid>
                             <Grid>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -142,27 +159,28 @@ const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
                             </Grid>
                         </Grid>
                     </Grid>
-                    :
-                    <Grid container spacing={2} direction={"column"}>
-                        <Grid item xs={12}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-                                Vaccination Created Successfully
-                            </Typography>
-                        </Grid>
-                        {/* <Grid item xs={12}>
+                        :
+                        <Grid container spacing={2} direction={"column"}>
+                            <Grid item xs={12}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                                    <CheckCircle sx={{ color: 'success.main' }} />
+                                    Vaccination Created Successfully
+                                </Typography>
+                            </Grid>
+                            {/* <Grid item xs={12}>
                             <Typography variant="body1" sx={{ textAlign: 'center' }}>
                                 Student ID: {newVaccine?.studentId}
                             </Typography>
                         </Grid> */}
-                        <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                             <Typography variant="body1" sx={{ textAlign: 'center' }}>
                                 Data: {JSON.stringify(newVaccine)}
                             </Typography>
+                        </Grid> */}
                         </Grid>
-                    </Grid>
                     }
                 </form>
-                <Grid container spacing={2} sx={{padding: "5px 20px 20px 20px"}}>
+                <Grid container spacing={2} sx={{ padding: "5px 20px 20px 20px" }}>
                     <Grid size={newVaccine ? 12 : 6}>
                         <Button variant='outlined' color='warning' fullWidth
                             onClick={() => {

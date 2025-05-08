@@ -35,12 +35,12 @@ const Vaccines = ({}) => {
     return (
         <>
         <Paper sx={{ padding: 2 }}>
-            <Typography sx={{ fontWeight: "bold" }}>
+            <Typography className="page-title" sx={{ fontWeight: "bold" }}>
                 Vaccination Drive List
             </Typography>
             <Grid container direction="row" spacing={1} sx={{ marginBottom: 2, alignItems: "baseline" }}>
-                <Typography sx={{ fontWeight: "bold", color: "gray" }}>
-                    Total Vaccination Drives: {vaccines.length}
+                <Typography className="vaccine-count"  sx={{ fontWeight: "bold", color: "gray" }}>
+                    Total Drives: {vaccines.length}
                 </Typography>
                 {/* <Button
                     variant="contained"

@@ -37,11 +37,11 @@ const Students = ({}) => {
     return (
         <>
         <Paper sx={{ padding: 2 }}>
-            <Typography sx={{ fontWeight: "bold" }}>
+            <Typography className="page-title" sx={{ fontWeight: "bold" }}>
                 Students List
             </Typography>
             <Grid container direction="row" spacing={1} sx={{ marginBottom: 2, alignItems: "baseline" }}>
-                <Typography sx={{ fontWeight: "bold", color: "gray" }}>
+                <Typography className="student-count" sx={{ fontWeight: "bold", color: "gray" }}>
                     Total Students: {students.length}
                 </Typography>
                 <Button

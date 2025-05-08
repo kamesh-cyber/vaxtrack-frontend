@@ -32,11 +32,14 @@ const header = () => {
                     VAX-TRACK
                 </Typography> */}
                 <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+                <div className="page-title-container">
                     <Button
+                        className="header-title"
                         sx={{ my: 2, color: 'white', display: 'block' }}
                     >
                         {pages.find((page) => page.path === window.location.pathname)?.name || "Dashboard"}
                     </Button>
+                    </div>
                     {/* {pages.map((page) => (
                     <Button
                         key={page}
