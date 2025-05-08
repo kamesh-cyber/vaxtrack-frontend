@@ -39,7 +39,7 @@ header button {
   width: 40px;
   height: 2px;
   background: linear-gradient(90deg, #3498db, #2ecc71);
-  /* transform: translateX(-50%); */
+  transform: translateX(-50%);
   border-radius: 2px;
 }
 

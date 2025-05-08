@@ -67,10 +67,33 @@ const showAlert = (alertData={open: false, severity: "info", message: "Alert Mes
   const event = new CustomEvent('showAlert', { detail: { alertData: alertData } });
   window.dispatchEvent(event);
 }
+const handleVaccinationErrors = (err, fieldErrors, setFieldErrors, setApiError) => {
+  console.log("handleVaccinationErrors", err);
+  if (err.response && err.response.data) {
+    const errorData = err.response.data;
+    
+    if (errorData.error && errorData.error.includes("Drive already exists for classes:")) {
+        const classesMatches = errorData.error.match(/classes: (.+)$/);
+        const conflictingClasses = classesMatches ? classesMatches[1] : '';
+        
+        setFieldErrors({
+            ...fieldErrors,
+            classes: `Drive already exists for classes: ${conflictingClasses}`
+        });
+        
+        setApiError(`A vaccination drive already exists for classes ${conflictingClasses}. Please select different classes.`);
+    } else {
+        setApiError(errorData.error || errorData.errors.join('\n') || "Failed to create vaccination drive. Please try again.");
+    }
+} else {
+    setApiError("An error occurred while creating the vaccination drive. Please try again.");
+}
 
+}
 export {
     formatDate,
     showLoading,
     showAlert,
-    formatClass
+    formatClass,
+    handleVaccinationErrors
 }
