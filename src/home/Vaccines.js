@@ -2,15 +2,17 @@ import React from 'react';
 import "./Vaccines.css";
 import { vaccinesData } from '../utils/dummyDatas';
 import {IconButton, Grid, Paper, Typography, Button} from '@mui/material';
-import {EditDocument as EditIcon, AddBox as AddIcon, DriveFolderUpload as UploadIcon, Add} from '@mui/icons-material';
+import {EditDocument as EditIcon, AddBox as AddIcon, DriveFolderUpload as UploadIcon, Add, Update} from '@mui/icons-material';
 import TableComp from '../components/TableComp';
 import { _get } from '../api/client';
-import { formatDate } from '../utils/common';
+import { formatClass, formatDate } from '../utils/common';
 import AddVaccineModal from '../components/AddVaccineModal';
+import UpdateVaccineModal from '../components/UpdateVaccineModal';
 
 const Vaccines = ({}) => {
     const [vaccines, setVaccines] = React.useState([]);
     const [showAddModal, setShowAddModal] = React.useState(false);
+    const [updateModal, setUpdateModal] = React.useState({show: false, vaccine: null});
 
     const getVaccines = async () => {
         await _get("/vaccinations", {})
@@ -63,10 +65,10 @@ const Vaccines = ({}) => {
                 <TableComp
                     title="Vaccination Drives"
                     columns={[
-                        { id: "_id", label: "ID", align: "center" },
+                        // { id: "_id", label: "ID", align: "center", format: (value) => value.slice(8) },
                         { id: "name", label: "Name", align: "center" },
                         { id: "active", label: "Active", align: "center", format: (value) => value ? "Yes" : "No" },
-                        { id: "classes", label: "Classes", align: "center", format: (value) => value.join(", ") },
+                        { id: "classes", label: "Classes", align: "center", format: (value) => formatClass(value) },
                         { id: "scheduled_date", type: "date", label: "Scheduled Date", align: "center", format: (value) => formatDate(value) },
                         { id: "available_doses", label: "Available Doses", align: "center" },
                         { id: "action", label: "Action", align: "center" }]}
@@ -78,6 +80,7 @@ const Vaccines = ({}) => {
                             icon: <EditIcon fontSize="small"/>,
                             onClick: (row) => {
                                 console.log("Edit", row);
+                                setUpdateModal({show: true, vaccine: row});
                             },
                         }
                     ]}
@@ -88,6 +91,13 @@ const Vaccines = ({}) => {
             open={showAddModal}
             handleClose={() => {
                 setShowAddModal(false);
+            }}
+            refreshVaccines={getVaccines}
+        />}
+        {updateModal.show && <UpdateVaccineModal
+            updateData={updateModal}
+            handleClose={() => {
+                setUpdateModal({show: false, vaccine: null});
             }}
             refreshVaccines={getVaccines}
         />}

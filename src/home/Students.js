@@ -13,7 +13,7 @@ const Students = ({}) => {
     const [students, setStudents] = React.useState([]);
     const [showAddModal, setShowAddModal] = React.useState(false);
     const [showUploadModal, setShowUploadModal] = React.useState(false);
-    const [updateModal, setUpdateModal] = React.useState({show: false, studentId: null});
+    const [updateModal, setUpdateModal] = React.useState({show: false, studentId: null, class: 0});
 
     const getStudents = async () => {
         await _get("/students", {})
@@ -83,7 +83,7 @@ const Students = ({}) => {
                             icon: <EditIcon fontSize="small"/>,
                             onClick: (row) => {
                                 console.log("Edit", row);
-                                setUpdateModal({show: true, studentId: row._id});
+                                setUpdateModal({show: true, studentId: row._id, class: row.class});
                             },
                         }
                     ]}
@@ -101,7 +101,7 @@ const Students = ({}) => {
         {updateModal.show && <UpdateStudentModal
             updateData={updateModal}
             handleClose={() => {
-                setUpdateModal({show: false, studentId: null});
+                setUpdateModal({show: false, studentId: null, class: 0});
             }}
             refreshStudents={getStudents}
         />}

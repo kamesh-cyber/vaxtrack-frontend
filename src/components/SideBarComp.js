@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import './SideBarComp.css';
-import { Toolbar, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Drawer } from '@mui/material';
+import { Toolbar, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Drawer } from '@mui/material';
 
 import {Dashboard as DashboardIcon, People as PeopleIcon, Vaccines as VaccinesIcon, Assessment as AssessmentIcon } from '@mui/icons-material';
 
 const DrawerBody = ({activeLink='', onLinkClick=()=>{}, ...props}) => {
     return (<div>
-        <Toolbar>
-          <h2 className='logo'>VAX-TRACK</h2>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }} onClick={() => onLinkClick('/dashboard')}>
+        <h2 className='logo' style={{ cursor: 'pointer' }}>VAX-TRACK</h2>
         </Toolbar>
         {/* <Divider /> */}
         <List sx={{ padding: "20px 0px" }}>
@@ -54,7 +54,7 @@ const SideBarComp = () => {
     };
 
     // Remove this const when copying and pasting into your project.
-    const container = window !== undefined ? () => window.document.body : undefined;
+    // const container = window !== undefined ? () => window.document.body : undefined;
     return (
         <Box
             component="nav"

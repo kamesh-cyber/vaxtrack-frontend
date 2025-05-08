@@ -3,6 +3,7 @@ import {Box, Button, Grid, Modal,Paper, Typography} from "@mui/material"
 import { Close } from "@mui/icons-material";
 import Dropzone from "react-dropzone";
 import "./Modal.css"
+import { _post } from "../api/client";
 
 //https://www.npmjs.com/package/react-dropzone
 
@@ -19,6 +20,7 @@ const style = {
 const UploadStudentModal = ({ open, handleClose, refreshStudents }) => {
     const [showModal, setShowModal] = React.useState(open);
     const [uploadedFile, setUploadedFile] = React.useState(null);
+    const [isFileUploaded, setIsFileUploaded] = React.useState(false);
 
     const handleUploadedExcel = (file) => {
         setUploadedFile({file: file[0], name: file[0].name, size: (file[0].size/1000)+'kb', numberOfRecords: getNumberOfRecords(file[0])});
@@ -34,6 +36,33 @@ const UploadStudentModal = ({ open, handleClose, refreshStudents }) => {
                 resolve(numberOfRecords);
             };
             reader.readAsText(file);
+        });
+    }
+    const handleSubmit = () => {
+        bulkUpload()
+    }
+    const bulkUpload = async () => {
+        console.log("bulkUpload", uploadedFile);
+        const formData = new FormData();
+        formData.append('file', uploadedFile.file);
+        await _post("/students/bulk", formData, {
+            headers: {
+            'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((res) => {
+            if (res.status !== 200) {
+                throw new Error("Failed to fetch data");
+            }
+            const resp = res.data;
+            if (resp.success === true && resp.data) {
+                refreshStudents();
+                setIsFileUploaded(true);
+                setUploadedFile(null);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
         });
     }
     return (
@@ -59,7 +88,7 @@ const UploadStudentModal = ({ open, handleClose, refreshStudents }) => {
 
                 </Box>
                 <Grid style={{ padding: 20 }}>
-                    {!uploadedFile && <Dropzone onDrop={acceptedFiles => handleUploadedExcel(acceptedFiles)}
+                    {!uploadedFile && !isFileUploaded && <Dropzone onDrop={acceptedFiles => handleUploadedExcel(acceptedFiles)}
                         accept={{
                             'text/csv': ['.csv'],
                         }}
@@ -86,19 +115,25 @@ const UploadStudentModal = ({ open, handleClose, refreshStudents }) => {
                             <Typography variant="subtitle" sx={{fontWeight: "bold", color: "#254a73"}}>{uploadedFile.numberOfRecords}</Typography>
                         </Grid>
                     </Grid>}
+
+                    {isFileUploaded && <Grid size={12} padding={2}>
+                        <Typography variant="body2" sx={{fontWeight: "bold", color: "#254a73", textAlign: "center"}} fullWidth>
+                            File Uploaded Successfully!
+                        </Typography>
+                    </Grid>}
                 </Grid>
                 <Grid container spacing={2} sx={{padding: "5px 20px 20px 20px"}}>
-                    <Grid size={6}>
+                    <Grid size={isFileUploaded ? 12 : 6}>
                         <Button variant='outlined' color='warning' fullWidth
                             onClick={() => {
                                 setShowModal(false);
                                 handleClose();
                             }}
-                        >Cancel</Button>
+                        >Close</Button>
                     </Grid>
-                    <Grid size={6}>
-                        <Button variant='contained' color='success' fullWidth>Upload</Button>
-                    </Grid>
+                    {!isFileUploaded && <Grid size={6}>
+                        <Button variant='contained' color='success' fullWidth onClick={handleSubmit}>Upload</Button>
+                    </Grid>}
                 </Grid>
             </Paper>
         </Modal>

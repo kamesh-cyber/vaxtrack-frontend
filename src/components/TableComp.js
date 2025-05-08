@@ -47,7 +47,7 @@ const TableComp = ({ columns, rows, actions }) => {
                                 <TableCell key={column.id+'-'+row.id} align={column.align}>
                                 {column.format && (typeof value === 'boolean'  || typeof value === 'object' || column?.type === 'date')
                                     ? column.format(value)
-                                    : value}
+                                    : value || column?.default || "Not Available"}
                                 </TableCell>
                             );
                             })}

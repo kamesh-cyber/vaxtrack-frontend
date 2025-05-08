@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {Box, Button, Grid, Modal, Paper, TextField, Typography} from '@mui/material';
-import { Close } from '@mui/icons-material';
+import { Close,CheckCircle } from '@mui/icons-material';
 import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import './Modal.css';
@@ -22,8 +22,8 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
     const [showModal, setShowModal] = React.useState(open);
     const [studentData, setStudentData] = React.useState({
         name: "",
-        class: 0,
-        age: 0,
+        class: null,
+        age: null,
         gender: "",
         dob: null,
     });
@@ -137,7 +137,8 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                     :
                     <Grid container spacing={2} direction={"column"}>
                         <Grid item xs={12}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold',textAlign: 'center',display: 'flex',alignItems: 'center',justifyContent: 'center',gap: 1}}>
+                            <CheckCircle sx={{ color: 'success.main' }} />
                                 Student Created Successfully
                             </Typography>
                         </Grid>
@@ -146,11 +147,11 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                                 Student ID: {newStudent?.studentId}
                             </Typography>
                         </Grid>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Typography variant="body1" sx={{ textAlign: 'center' }}>
                                 Message: {newStudent?.message}
                             </Typography>
-                        </Grid>
+                        </Grid> */}
                     </Grid>
                     }
                 </form>

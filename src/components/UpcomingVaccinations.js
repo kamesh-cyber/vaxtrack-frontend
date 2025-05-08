@@ -3,12 +3,19 @@ import {Avatar, List, ListItem, ListItemAvatar, ListItemText} from '@mui/materia
 import {NotificationsActive as NotificationsActiveIcon} from '@mui/icons-material';
 import { formatDate } from "../utils/common";
 
-const UpcomingVaccinations = ({upcomingDrives=[]}) => {
-    const [vaccinations, setVaccinations] = React.useState(upcomingDrives);
+const UpcomingVaccinations = ({upcomingDrives=[],onVaccineClick=()=>{}}) => {
+    const [vaccinations] = React.useState(upcomingDrives);
+    const itemStyle = {
+        cursor: 'pointer',
+        transition: 'background-color 0.2s',
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+        }
+    }; 
     return (
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             {vaccinations.length ? vaccinations.map((vaccination, index) => (
-                <ListItem key={index}>
+                <ListItem key={index} onClick={() => onVaccineClick(vaccination)} style = {{ cursor: 'pointer' }} sx = {itemStyle}>
                     <ListItemAvatar>
                         <Avatar sx={{ backgroundColor: '#f0bd3a' }}>
                             <NotificationsActiveIcon />

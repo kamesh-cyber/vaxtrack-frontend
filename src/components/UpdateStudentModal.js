@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import {Box, Button, Grid, Modal, Paper, TextField, Typography} from '@mui/material';
-import { Close } from '@mui/icons-material';
-import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { Close,CheckCircle } from '@mui/icons-material';
 import './Modal.css';
 import { _get, _patch } from '../api/client';
+import dayjs from 'dayjs';
 
 
 const style = {
@@ -27,12 +26,34 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
         dob: null,
         vaccinations: []
     });
+    const [vaccinations, setVaccinations] = React.useState([])
+    const [updateReq, setUpdateReq] = React.useState({vaccination: ""});
     const [updatedStudent, setUpdatedStudent] = React.useState(null);
     useEffect(() => {
         if (updateData) {
-            getStudentData(updateData.studentId);
+            getModalDatas(updateData);
         }
     }, [updateData])
+    const getModalDatas = async (data) => {
+        await getVaccinesByClass(data.class);
+        await getStudentData(data.studentId);
+        setShowModal(true);
+    }
+    const getVaccinesByClass = async (classId) => {
+        await _get(`/vaccinations?class=${classId}`, {})
+        .then((res) => {
+            if (res.status !== 200) {
+                throw new Error("Failed to fetch data");
+            }
+            const resp = res.data;
+            if (resp.success === true && resp.data) {
+                setVaccinations(resp.data);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
     const getStudentData = async (id) => {
         await _get(`/students/${id}`, {})
         .then((res) => {
@@ -47,9 +68,8 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
                     class: resp.data.class,
                     gender: resp.data.gender,
                     dob: resp.data.dateOfBirth,
-                    vaccinations: resp.data.vaccinations,
+                    vaccinations: resp.data?.vaccinations || [],
                 });
-                setShowModal(true);
             }
         })
         .catch((err) => {
@@ -57,23 +77,23 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
         })
     }
     const handleChange = (key, value) => {
-        setStudentData({
-            ...studentData,
+        setUpdateReq({
             [key]: value,
         });
     }
     const handleSubmit = () => {
-        console.log("handleSubmit", studentData);
         updateStudent();
     }
     const updateStudent = async () => {
-        console.log("updateStudent", studentData);
-        await _patch("/students/{id}/vaccinate", {
-            "vaccines": studentData.vaccinations
+        console.log("updateStudent", updateReq);
+        const data = JSON.parse(updateReq.vaccination);
+        await _patch(`/students/${updateData.studentId}/vaccinate`, {
+            "vaccineName": data.name,
+            "vaccinatedOn": dayjs(data.scheduled_date).format('DD-MM-YYYY'),
           }, {})
         .then((res) => {
             console.log(res);
-            if (res.status !== 201) {
+            if (res.status !== 200) {
                 throw new Error("Failed to fetch data");
             }
             const resp = res.data;
@@ -93,13 +113,13 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
                 setShowModal(false);
                 handleClose();
             }}
-            className='add-student-modal'
+            className='update-student-modal'
         >
-            <Paper className='add-student-modal-box' sx={style}>
+            <Paper className='update-student-modal-box' sx={style}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2, borderRadius: "8px 8px 0px 0px",
                     color: 'white', backgroundColor: '#254a73', alignItems: 'center' }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 16 }}>
-                        Edit Student Vaccination
+                        Update Student Vaccination Details
                     </Typography>
                     <Typography variant="body2" onClick={() => {
                         handleClose();
@@ -165,19 +185,50 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
                                     onChange={(e) => handleChange("dob", e.target.value)}/>
                             </Grid>
                         </Grid>
+                        <Grid container spacing={2} direction={"column"}>
+                            <Grid container spacing={0.25} direction={"column"}>
+                                <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+                                    Vaccinations Taken
+                                </Typography>
+                                <Grid>
+                                    {studentData.vaccinations.length ? 
+                                    studentData.vaccinations.map((vaccine) => (<Typography variant="body1" sx={{ textAlign: 'center' }} fullWidth>{vaccine.vaccineName} on {vaccine.vaccinatedOn}</Typography>))
+                                    :<Typography variant="body1" sx={{ textAlign: 'center' }} fullWidth>No Vaccination Taken</Typography>}
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={2} size={12}>
+                                <Grid size={12}>
+                                    <TextField fullWidth
+                                        select
+                                        size="small"
+                                        slotProps={{
+                                            select: {
+                                                native: true,
+                                            },
+                                        }}
+                                        value={updateReq.vaccination}
+                                        onChange={(e) => handleChange("vaccination", e.target.value)}
+                                    >
+                                        <option value="" disabled>--Select Vaccination--</option>
+                                        { vaccinations.filter(vaccine => vaccine.active).map((vaccine) => (<option value={JSON.stringify(vaccine)}>{vaccine.name}</option>)) }
+                                    </TextField>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                     </Grid>
                     :
                     <Grid container spacing={2} direction={"column"}>
                         <Grid item xs={12}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-                                Student Vaccines Updated Successfully
+                            <Typography variant="h6" sx={{ fontWeight: 'bold',textAlign: 'center',display: 'flex',alignItems: 'center',justifyContent: 'center',gap: 1}}>
+                            <CheckCircle sx={{ color: 'success.main' }} />
+                                Student Vaccine Details Updated Successfully
                             </Typography>
                         </Grid>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                                Vaccination: {updatedStudent?.vaccinations}
+                                Vaccination: {JSON.stringify(updatedStudent?.vaccinations)}
                             </Typography>
-                        </Grid>
+                        </Grid> */}
                     </Grid>
                     }
                 </form>
@@ -191,7 +242,7 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
                         >{updatedStudent ? 'Close' : 'Cancel'}</Button>
                     </Grid>
                     {!updatedStudent && <Grid size={6}>
-                        <Button variant='contained' color='success' fullWidth onClick={handleSubmit}>Submit</Button>
+                        <Button variant='contained' color='success' fullWidth onClick={handleSubmit}>Update</Button>
                     </Grid>}
                 </Grid>
             </Paper>

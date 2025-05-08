@@ -3,10 +3,22 @@ import { Grid, Icon, Paper, Typography } from '@mui/material';
 import {Groups as GroupsIcon, MedicalServices as MedicalServicesIcon, Summarize as SummarizeIcon} from '@mui/icons-material';
 import './Dashboard.css';
 import UpcomingVaccinations from '../components/UpcomingVaccinations';
+import VaccinationDetailsModal from '../components/VaccinationDetailsModal';
 import { _get } from '../api/client';
 
 const Dashboard = () => {
     const [dashboardData, setDashboardData] = React.useState({});
+    const [selectedVaccine, setSelectedVaccine] = React.useState(null);
+    const [modalOpen, setModalOpen] = React.useState(false);
+
+    const handleVaccineClick = (vaccine) => {
+        setSelectedVaccine(vaccine);
+        setModalOpen(true);
+    };
+    const handleCloseModal = () => {
+        setModalOpen(false);
+    };
+
     const getDashoboardData = async () => {
         if (dashboardData && Object.keys(dashboardData).length > 0) {
             return;
@@ -69,11 +81,18 @@ const Dashboard = () => {
                     <Typography sx={{opacity: 0.6}}>Upcoming Vaccination Drives</Typography>
                     {dashboardData?.upcomingDrives?.length && <UpcomingVaccinations
                         upcomingDrives={dashboardData?.upcomingDrives || []}
+                        onVaccineClick={handleVaccineClick}
                     />}
                 </div>
             </Paper>
         </Grid>
       </Grid>
+             {/* Modal for displaying vaccination details */}
+             <VaccinationDetailsModal 
+                open={modalOpen} 
+                handleClose={handleCloseModal}
+                vaccination={selectedVaccine} 
+            />
     </div>
   );
 }
