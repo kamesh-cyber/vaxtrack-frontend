@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
+import React from 'react';
+import { AppBar, Box, Button, Toolbar} from '@mui/material';
 import './header.css';
 
 const header = () => {

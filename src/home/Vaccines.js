@@ -1,8 +1,7 @@
 import React from 'react';
 import "./Vaccines.css";
-import { vaccinesData } from '../utils/dummyDatas';
-import {IconButton, Grid, Paper, Typography, Button} from '@mui/material';
-import {EditDocument as EditIcon, AddBox as AddIcon, DriveFolderUpload as UploadIcon, Add, Update} from '@mui/icons-material';
+import {Grid, Paper, Typography, Button} from '@mui/material';
+import {EditDocument as EditIcon, AddBox as AddIcon} from '@mui/icons-material';
 import TableComp from '../components/TableComp';
 import { _get } from '../api/client';
 import { formatClass, formatDate } from '../utils/common';
