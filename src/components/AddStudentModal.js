@@ -67,11 +67,12 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
         });
     }
     const handleSubmit = () => {
-        console.log("handleSubmit", studentData);
+        if (!validateForm()) return;
         createStudent();
     }
     const createStudent = async () => {
-        console.log("createStudent", studentData);
+        setIsSubmitting(true);
+        setApiError(null);
         await _post("/students", {
             "name": studentData?.name || "",
             "age": studentData?.age || "",
@@ -93,7 +94,10 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
         .catch((err) => {
             console.log(err);
             handleStudentErrors(err, fieldErrors, setFieldErrors, setApiError);
-        });
+        })
+        .finally(() => {
+            setIsSubmitting(false);
+        })
     }
     return (
         <Modal

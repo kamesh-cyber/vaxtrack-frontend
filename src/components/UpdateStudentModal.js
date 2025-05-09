@@ -65,7 +65,7 @@ const UpdateStudentModal = ({ updateData, handleClose, refreshStudents }) => {
         );
     }
     const getStudentData = async (id) => {
-        await _get(`/students/${id}`, {})
+        await _get(`/students?id=${id}`, {})
         .then((res) => {
             if (res.status !== 200) {
                 throw new Error("Failed to fetch data");
