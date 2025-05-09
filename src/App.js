@@ -9,8 +9,6 @@ import Students from './home/Students.js';
 import Vaccines from './home/Vaccines.js';
 import Reports from './home/Reports.js';
 import PageLoader from './components/PageLoader.js';
-import SnackbarAlerts from './components/SnackbarAlerts.js';
-
 function App() {
   let navigate = useNavigate();
 
@@ -34,7 +32,6 @@ function App() {
       </Route>
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
-    <SnackbarAlerts />
     </>
   );
 }

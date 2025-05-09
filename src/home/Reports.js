@@ -8,27 +8,22 @@ import ReportsFilter from "../components/ReportsFilter";
 import ExportModal from "../components/ExportModal";
 
 const Reports = () => {
-    // Data states
     const [students, setStudents] = React.useState([]);
     const [filteredStudents, setFilteredStudents] = React.useState([]);
     const [showExpModal, setShowExpModal] = React.useState(false);
     
-    // Error and loading states
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(null);
     const [hasSearched, setHasSearched] = React.useState(false);
     
-    // Pagination states
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     
-    // Handler for page change
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
         paginateData(students, newPage, rowsPerPage);
     };
     
-    // Handler for rows per page change
     const handleChangeRowsPerPage = (event) => {
         const newRowsPerPage = parseInt(event.target.value, 10);
         setRowsPerPage(newRowsPerPage);
@@ -36,7 +31,6 @@ const Reports = () => {
         paginateData(students, 0, newRowsPerPage);
     };
     
-    // Apply pagination to data
     const paginateData = (data, currentPage, pageSize) => {
         const startIndex = currentPage * pageSize;
         const endIndex = startIndex + pageSize;
@@ -44,22 +38,19 @@ const Reports = () => {
         setFilteredStudents(paginatedData);
     };
     
-    // Get filtered data from API and apply pagination
     const getFilteredData = async (filters, paginatedData) => {
-        // Reset states
+
         setLoading(true);
         setError(null);
         setHasSearched(true);
         
         try {
-            // If we received paginated data directly from the filter component, use it
             if (paginatedData) {
                 setFilteredStudents(paginatedData);
                 setStudents(paginatedData);
                 return;
             }
             
-            // Otherwise, fetch data based on filters
             const filtersObject = filters.reduce((acc, filter) => {
                 acc[filter.filterType] = filter.filterValue;
                 return acc;
@@ -74,16 +65,12 @@ const Reports = () => {
             const resp = res.data;
             if (resp.success === true) {
                 if (resp.data && resp.data.length > 0) {
-                    // Store the complete dataset
                     setStudents(resp.data);
                     
-                    // Reset to first page when new data is loaded
                     setPage(0);
                     
-                    // Apply pagination to the new data
                     paginateData(resp.data, 0, rowsPerPage);
                 } else {
-                    // No data found
                     setStudents([]);
                     setFilteredStudents([]);
                     setError("No matching records found for the selected filters.");
@@ -128,7 +115,6 @@ const Reports = () => {
         setShowExpModal(false);
     };
     
-    // Render empty state
     const renderEmptyState = () => {
         return (
             <Box 
@@ -218,7 +204,6 @@ const Reports = () => {
                                 </Grid>
                             </>
                         ) : (
-                            // Show empty state only if a search has been performed
                             hasSearched && renderEmptyState()
                         )}
                     </>

@@ -28,7 +28,6 @@ const TableComp = ({
                 </TableHead>
                 <TableBody>
                     {rows.map((row) => {
-                        // Remove the slice operation - rely on server pagination
                         return (
                         <TableRow hover tabIndex={-1} key={row._id || row.id}>
                             {columns.map((column) => {

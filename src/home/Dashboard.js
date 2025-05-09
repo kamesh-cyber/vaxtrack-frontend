@@ -38,10 +38,7 @@ const Dashboard = () => {
             });
     }
     useEffect(() => {
-        // const interval = setInterval(() => {
             getDashoboardData();
-        // }, 60000);
-        // return () => clearInterval(interval);
     }, []);
   return (
     <div>
@@ -89,7 +86,6 @@ const Dashboard = () => {
         </Grid>
         </Grid>
       </Grid>
-             {/* Modal for displaying vaccination details */}
              <VaccinationDetailsModal 
                 open={modalOpen} 
                 handleClose={handleCloseModal}

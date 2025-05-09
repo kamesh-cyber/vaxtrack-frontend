@@ -4,7 +4,7 @@ import { setLocalStorage } from "../utils/local.js";
 
 const LoginPage = () => {
     const handleLogin = () => {
-        const token = "sampleToken"; // Replace with actual token from login API
+        const token = "sampleToken"; 
         setLocalStorage("token", token);
         window.location.pathname = "/dashboard";
     };

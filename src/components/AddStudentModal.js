@@ -14,7 +14,6 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    // width: 400,
     boxShadow: 24,
     borderRadius: 2,
 };
@@ -53,7 +52,6 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
         
         setFieldErrors(errors);
         
-        // Return true if no errors (all values are empty strings)
         return Object.values(errors).every(error => error === '');
     };
     const handleChange = (key, value) => {
@@ -215,11 +213,6 @@ const AddStudentModal = ({ open, handleClose, refreshStudents }) => {
                                 Student ID: {newStudent?.studentId}
                             </Typography>
                         </Grid>
-                        {/* <Grid item xs={12}>
-                            <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                                Message: {newStudent?.message}
-                            </Typography>
-                        </Grid> */}
                     </Grid>
                     }
                 </form>
