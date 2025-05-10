@@ -40,7 +40,6 @@ const UploadStudentModal = ({ open, handleClose, refreshStudents }) => {
         bulkUpload()
     }
     const bulkUpload = async () => {
-        console.log("bulkUpload", uploadedFile);
         const formData = new FormData();
         formData.append('file', uploadedFile.file);
         await _post("/students/bulk", formData, {

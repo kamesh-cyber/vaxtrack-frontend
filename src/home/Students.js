@@ -53,7 +53,7 @@ const Students = () => {
                 offset: offset
             };
             
-            // Add search parameters if searching
+            console.log("search", search);
             if (search && search.value) {
                 switch (search.type) {
                     case 'name':
@@ -99,20 +99,18 @@ const Students = () => {
         }
     };
     
-    // Handle search
     const handleSearch = () => {
         setIsSearching(!!searchTerm);
-        setPage(0); // Reset to first page when searching
+        setPage(0); 
         getStudents(0, rowsPerPage, { type: searchType, value: searchTerm });
     };
     
-    // Clear search
     const clearSearch = () => {
         setSearchTerm('');
         setSearchType('name');
         setIsSearching(false);
         setPage(0);
-        getStudents(0, rowsPerPage);
+        getStudents(0, rowsPerPage,null);
     };
     
     // Handle page change

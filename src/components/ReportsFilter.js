@@ -14,7 +14,6 @@ const ReportsFilter = ({getFilteredData=() => {}}) => {
     ]);
     const [vaccines, setVaccines] = React.useState([]);
     const handleFilterChange = (key, value, index) => {
-        console.log(key, value, index)
         const updatedFilters = [...filters];
         updatedFilters[index][key] = value;
         setFilters(updatedFilters);
@@ -80,7 +79,6 @@ const ReportsFilter = ({getFilteredData=() => {}}) => {
         setFilters(updatedFilters);
     }
     const handleGenerateReport = () => {
-        console.log(filters);
         getFilteredData(filters);
     }
     const handleFilterReset = () => {

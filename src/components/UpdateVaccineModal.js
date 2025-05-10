@@ -93,7 +93,6 @@ const UpdateVaccineModal = ({ updateData, handleClose, refreshVaccines }) => {
         setApiError(null);
         
         try {
-            console.log("Updating vaccination drive with data:", vaccineData);
             const response = await _patch(`/vaccinations/${updateData.vaccine._id}`, {
                 "scheduled_date": vaccineData?.scheduled_date ? dayjs(vaccineData.scheduled_date).format() : "",
                 "available_doses": Number(vaccineData?.available_doses) || 0,

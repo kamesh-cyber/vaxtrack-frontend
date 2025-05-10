@@ -2,7 +2,7 @@ const moment = require("moment/moment");
 
 const formatDate = (date) => {
   if (!date) return "";
-  return moment(date).format("DD/MM/YYYY");
+  return moment.utc(date).format("DD/MM/YYYY");
 }
 const formatClass = (value) => {
   if (!value || !Array.isArray(value) || value.length === 0) return "None";

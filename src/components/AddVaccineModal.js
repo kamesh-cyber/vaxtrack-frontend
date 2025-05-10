@@ -88,7 +88,7 @@ const AddVaccineModal = ({ open, handleClose, refreshVaccines }) => {
         try {
             const response = await _post("/vaccinations", {
                 "name": vaccineData?.name || "",
-                "scheduled_date": vaccineData?.scheduled_date ? dayjs(vaccineData.scheduled_date).format() : "",
+                "scheduled_date": vaccineData?.scheduled_date? dayjs(vaccineData.scheduled_date).format('YYYY-MM-DD') : "",
                 "available_doses": vaccineData?.available_doses || 0,
                 "classes": vaccineData?.classes || [],
             });

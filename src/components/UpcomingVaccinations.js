@@ -54,7 +54,6 @@ const UpcomingVaccinations = ({upcomingDrives=[],onVaccineClick=()=>{}}) => {
     );
     return (
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-            {console.log(upcomingDrives)}
             {upcomingDrives.length ? upcomingDrives.map((vaccination, index) => (
                 <ListItem key={index} onClick={() => onVaccineClick(vaccination)} style = {{ cursor: 'pointer' }} sx = {itemStyle}>
                     <ListItemAvatar>
