@@ -1,70 +1,49 @@
-# Getting Started with Create React App
+# README: VaxTrack FrontEnd
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+A comprehensive web application for school coordinators to manage and track student vaccination efforts. `VaxTrack` provides a user-friendly interface for tracking vaccination status, managing vaccination drives, and generating detailed reports.
 
-## Available Scripts
+---
+## Techonlogies Used
+- React 19.1.0
+- Material UI 7.0.2
+- Axios for API requests
+---
+## Prerequisites
+1. **Node.js**: Ensure you have Node.js installed (v16 or later).
+2. **npm**: Ensure you have Node.js installed (v7.0.0 or later).
+3. Backend API Running
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Installation**
+1. Clone the repository
+     ``` 
+        git clone https://github.com/kamesh-cyber/vaxtrack-frontend.git
+        cd vaxtrack-frontend
+        npm install
+    ```
+2. Configure the API endpoint:
+    ```
+   Open client.js
+   Update the REACT_APP_BASE_URL constant if your backend is running on a different URL
+    ```
+3. Start the application
+   ```
+   # Development mode (with auto-reload)
+   npm start
+   # Production mode
+   npm run build
+   ```
+## Usage Guide
+1. **Login**: Use the login page with default credentials (username/password)
+2. **Dashboard**: View key metrics and upcoming vaccination drives
+3. **Student Management**:
+    1. Add individual students via the form
+    2. Bulk import students with CSV
+    3. Search and filter students by various criteria
+4. **Vaccination Drive Management**:
+    1. Create vaccination drives with target classes
+    2. Monitor availability and scheduled dates
+    3. Update or disable drives as needed
+5. **Reports**:
+    1. Generate filtered reports based on vaccination status, class, etc.
+    2. Export reports in CSV, Excel, or PDF formats
